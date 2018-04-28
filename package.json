@@ -1,0 +1,35 @@
+{
+  "name": "musicmonkey",
+  "version": "0.0.0",
+  "description": "MusicMonkey API",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bounteous/musicmonkey-api.git"
+  },
+  "keywords": [
+    "Music",
+    "Monkey",
+    "API"
+  ],
+  "author": "Bounteous",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/bounteous/musicmonkey-api/issues"
+  },
+  "homepage": "https://github.com/bounteous/musicmonkey-api#readme",
+  "dependencies": {
+    "bcrypt": "^2.0.1",
+    "express": "^4.16.3",
+    "jsonwebtoken": "^8.2.1",
+    "mongoose": "^5.0.16",
+    "morgan": "^1.9.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.3"
+  }
+}

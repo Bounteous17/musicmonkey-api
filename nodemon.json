@@ -1,0 +1,9 @@
+{
+  "env": {
+    "PORT": 4900,
+    "DEBUG": true,
+    "DBSUCCESS": true,
+    "JWT_KEY": "secret"
+  }
+}
+  
