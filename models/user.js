@@ -1,14 +1,11 @@
-const mongoose = require('mongoose');
+var mongoose = require('mongoose');
 
-const userSchema = mongoose.Schema({
+var UserSchema = new mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
-    email: {
-        type: String,
-        required: true,
-        unique: true ,
-        match: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/
-    },
-    password: { type: String, required: true }
-});
+    username: { type: String, match: [/^[a-zA-Z0-9]+$/, 'Is invalid']},
+    email: { type: String, lowercase: true, match: [/\S+@\S+\.\S+/, 'Is invalid']},
+    password: { type: String, required: true},
+    torrents: { type: Array, "default": []}
+}, {timestamps: true});
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model('User', UserSchema);

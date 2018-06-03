@@ -7,13 +7,18 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 
 router.post("/signup", (req, res, next) => {
-  User.find({ email: req.body.email })
+  if (!req.body.username || !req.body.email || !req.body.password) {
+    res.status(500);
+    res.send({message: "The fields username, email and password are required"});
+    return;
+  }
+  User.find({ email: req.body.email }, { email: req.body.username }, { username: req.body.username })
     .exec()
     .then(user => {
       if (user.length >= 1) {
-        return res.status(409).json({
-          message: "Mail exists"
-        });
+        res.status(409);
+        res.send({message: "User already exists"});
+        return;
       } else {
         bcrypt.hash(req.body.password, 10, (err, hash) => {
           if (err) {
@@ -24,6 +29,7 @@ router.post("/signup", (req, res, next) => {
             const user = new User({
               _id: new mongoose.Types.ObjectId(),
               email: req.body.email,
+              username: req.body.username,
               password: hash
             });
             user
