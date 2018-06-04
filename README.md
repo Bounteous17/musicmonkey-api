@@ -17,8 +17,8 @@ This is a dev NodeJS API for the basic functionality of the APP
 
 Install and run the API:
 ```
-npm i -S
-npm start
+yarn install
+yarn start
 ```
 
 ## Examples
