@@ -1,11 +1,9 @@
-const http = require('http');
 const app  = require('./index.js');
+const mumoConfig = require('./config.js').get(process.env.NODE_ENV);
 
-const port = process.env.PORT || 24312;
+const port = mumoConfig.PORT;
 
-const server = http.createServer(app);
-
-app.listen(process.env.PORT, () => {
+app.listen(port, () => {
     console.log(
         `\nAPI working on http://localhost:${port}\n`
     )

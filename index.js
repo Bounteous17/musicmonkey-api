@@ -1,10 +1,12 @@
-var express 	= require('express');
-var bodyParser  = require('body-parser');
-var morgan      = require('morgan');
-var mongoose    = require('mongoose');
-var jwt         = require('jsonwebtoken'); 
+const express = require('express');
+const bodyParser = require('body-parser');
+const morgan = require('morgan');
+const mongoose = require('mongoose');
+const cors = require('cors');
 
 var app = express();
+
+app.use(cors())
 
 var userRoutes = require('./routes/user.js');
 
@@ -21,15 +23,6 @@ app.use(require('body-parser').json({ type : '*/*' }));
 
 // use morgan to log requests to the console
 app.use(morgan("dev"));
-
-// Enable CORS from client-side
-app.use(function(req, res, next) {  
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
-    res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, Access-Control-Allow-Credentials");
-    res.setHeader("Access-Control-Allow-Credentials", "true");
-    next();
-});
 
 // basic routes for the monkeys
 app.get('/', function(req, res) {

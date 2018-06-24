@@ -4,7 +4,8 @@
   "description": "MusicMonkey API",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon server.js",
+    "start-dev": "nodemon server.js",
+    "start-prod": "NODE_ENV='production' node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -25,10 +26,13 @@
   "dependencies": {
     "bcrypt": "^2.0.1",
     "body-parser": "^1.18.3",
+    "cors": "^2.8.4",
     "express": "^4.16.3",
+    "forever": "^0.15.3",
     "jsonwebtoken": "^8.2.1",
     "mongoose": "^5.0.16",
-    "morgan": "^1.9.0"
+    "morgan": "^1.9.0",
+    "yarn": "^1.7.0"
   },
   "devDependencies": {
     "nodemon": "^1.17.3",
