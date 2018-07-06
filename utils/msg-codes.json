@@ -1,0 +1,16 @@
+{
+    "app_errors": {
+        "A0": "No user found ... :(",
+        "A1": "Authentication failed :(",
+        "B0": "Error refreshing token ;)",
+        "B1": "User already exists",
+        "C0": "The fields username, email and password are required"
+    },
+    "app_success": {
+        "A0": "User created successfully",
+        "B1": "Authentication successfull ;)"
+    },
+    "sys_errors": {
+        "A0": "Server database error :)"
+    }
+}

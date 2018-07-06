@@ -6,19 +6,21 @@ const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
 const auth = require('../utils/auth');
+const mumoMessages = require('../utils/msg-codes.json');
 
 router.post("/signup", (req, res, next) => {
+
   if (!req.body.username || !req.body.email || !req.body.password) {
     res.status(500);
-    res.send({message: "The fields username, email and password are required"});
+    res.send({error: true, message: mumoMessages.app_errors.C0});
     return;
   }
-  User.find({ email: req.body.email }, { email: req.body.username })
-    .exec()
+
+  User.findOne({ email: req.body.email }, { email: req.body.username })
     .then(user => {
-      if (user.length >= 1) {
+      if (user) {
         res.status(409);
-        res.send({message: "User already exists"});
+        res.send({error: true, message: mumoMessages.app_errors.B1});
         return;
       } else {
         bcrypt.hash(req.body.password, 10, (err, hash) => {
@@ -37,7 +39,7 @@ router.post("/signup", (req, res, next) => {
               .save()
               .then(result => {
                 res.status(201);
-                res.send({error: false, message: "User created"});
+                res.send({error: false, message: mumoMessages.app_success.A0});
               })
               .catch(err => {
                 console.log(err);
@@ -51,29 +53,40 @@ router.post("/signup", (req, res, next) => {
 });
 
 router.post("/login", (req, res, next) => {
-  User.find({ email: req.body.email })
-    .exec()
+  User.findOne({ email: req.body.email })
     .then(user => {
-      if (user.length < 1) {
+      if (!user) {
         return res.status(401).json({
-          message: "User not found"
+          message: mumoMessages.app_errors.A0
         });
       }
-      bcrypt.compare(req.body.password, user[0].password, (err, result) => {
+      
+      bcrypt.compare(req.body.password, user.password, (err, result) => {
         if (err) {
           res.status(401);
-          res.send({error: true, message: "Auth failed"});
+          res.send({error: true, message: mumoMessages.app_errors.A1});
           return;
         }
         if (result) {
-          let token = auth.generateToken(user[0]);
-          res.status(200);
-          res.send({error: false, message: "Auth successful", token: token});
+          auth.generateToken(user, function(reply) {
+            if (reply.error) {
+              res.status(500)
+              res.send(reply);
+              return;
+            } else if (reply.stats) {
+              res.status(404)
+              res.send(reply);
+              return;
+            }
+            res.status(200);
+            res.send({error: false, message: mumoMessages.app_success.B1});
+            return;
+          });
+        } else {
+          res.status(401)
+          res.send({error: true, message: mumoMessages.app_errors.A1});
           return;
         }
-        res.status(401)
-        res.send({error: true, message: "Auth failed"});
-        return;
       });
     })
     .catch(err => {
