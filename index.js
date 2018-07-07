@@ -1,14 +1,20 @@
 const express = require('express');
+const app = express();
+
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const mumoConfig = require('./config.js').get(process.env.NODE_ENV);
 
-var app = express();
+const port = mumoConfig.PORT;
 
-app.use(cors())
+app.use(cors());
 
-var userRoutes = require('./routes/user.js');
+const defaultRoutes = require('./routes/default.js');
+const userRoutes = require('./routes/user.js');
+
+app.use(bodyParser.json());
 
 mongoose.connect('mongodb://localhost:27017/MusicMonkey-dev', function(err) {
     if (err) {
@@ -24,11 +30,7 @@ app.use(require('body-parser').json({ type : '*/*' }));
 // use morgan to log requests to the console
 app.use(morgan("dev"));
 
-// basic routes for the monkeys
-app.get('/', function(req, res) {
-	res.status(201).json({ message: 'You can see me :D - That monkeys...' });
-});
-
-app.use("/user", userRoutes);
+app.use("/", defaultRoutes);
+app.use("/users", userRoutes);
 
 module.exports = app;
