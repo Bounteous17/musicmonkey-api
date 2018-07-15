@@ -3,10 +3,15 @@ const mumoMessages = require('../utils/msg-codes.json');
 const express = require('express');
 const router = express.Router();
 
-router.post('/test', function (req, res) {
+const parseTorrent = require('parse-torrent')
+const fs = require('fs')
+
+router.get('/info-torrent', function (req, res) {
+
+      let torrentInfo = parseTorrent(fs.readFileSync(__dirname + '/tent.torrent'))
 
       res.status(200);
-      res.send('test');
+      res.send({error: false, message: torrentInfo});
       return;
 
 });
