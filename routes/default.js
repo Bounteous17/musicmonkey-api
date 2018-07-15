@@ -57,7 +57,7 @@ router.post('/signup', function (req, res) {
 });
 
 router.post('/login', function (req, res) {
-  User.findOne({ email: req.body.email })
+  User.findOne({ username: req.body.username })
     .then(user => {
       if (!user) {
         return res.status(401).json({
@@ -83,7 +83,7 @@ router.post('/login', function (req, res) {
               return;
             }
             res.status(200);
-            res.send({error: false, message: mumoMessages.app_success.B1});
+            res.send({error: false, token: reply.token, user: user});
             return;
           });
         } else {

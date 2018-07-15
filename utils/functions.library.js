@@ -14,7 +14,7 @@ exports.storeToken = function(user, token, callback) {
             if (err) return callback({error: true, stats: mumoMessages.sys_errors.A0});
         })
 
-        return callback({error: false, message: user.sessions});
+        return callback({error: false, token: token});
         
     })
     .catch((e) => {
