@@ -13,6 +13,8 @@
     },
     "sys_errors": {
         "A0": "Server database error :)",
-        "B0": "Storage server down, try latter"
+        "B0": "Storage server down, try latter",
+        "B1": "File not found",
+        "B2": "No files were uploaded"
     }
 }

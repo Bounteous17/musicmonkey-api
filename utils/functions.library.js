@@ -56,5 +56,20 @@ exports.scpTorrent = function(filePath) { // mv torrent to ZFS storage server
         fs.unlinkSync(filePath);
         return true;
     })
-    return true;
+}
+
+exports.backTorrent = function(torrentHash) { // download torrent by id from storage server
+    let storePath = '/tmp/' + torrentHash + '.torrent';
+    clientScp.scp({
+        host: mumoConfig.storageHost,
+        username: mumoConfig.storageUsername,
+        password: mumoConfig.storagePassword,
+        path: mumoConfig.storagePath + '/' + torrentHash + '.torrent',
+        port: mumoConfig.storagePort
+    }, storePath, function(err) {
+        if (err) {
+            return false;
+        }
+        return true;
+    })
 }

@@ -1,23 +1,18 @@
 const express = require('express');
 const app = express();
 const fileUpload = require('express-fileupload');
-
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const mumoConfig = require('./config.js').get(process.env.NODE_ENV);
+const defaultRoutes = require('./routes/default.js');
+const userRoutes = require('./routes/user.js');
 
-const port = mumoConfig.PORT;
-
-// default options
+// default options express
 app.use(cors());
 app.use(fileUpload({
     limits: { fileSize: 1 * 1024 * 1024 },
 }));
-
-const defaultRoutes = require('./routes/default.js');
-const userRoutes = require('./routes/user.js');
 
 app.use(bodyParser());
 app.use(bodyParser.json({limit: '1mb'}));
@@ -41,6 +36,7 @@ mongoose.connect('mongodb://localhost:27017/MusicMonkey-dev', function(err) {
 app.use(morgan("dev"));
 
 app.use("/", defaultRoutes);
+// middleware starts here
 app.use("/users", userRoutes);
 
 module.exports = app;
