@@ -1,7 +1,9 @@
+const clientScp = require('scp2')
+const parseTorrent = require('parse-torrent');
 const User = require('../models/user');
 const mumoMessages = require('./msg-codes.json');
-const clientScp = require('scp2')
 const mumoConfig = require('../config.js').get(process.env.NODE_ENV);
+const fs = require('fs');
 
 exports.storeToken = function(user, token, callback) {
     User.findOne({username: user.username})
@@ -40,11 +42,19 @@ exports.listToken = function(user, callback) { // list stored tokens from user
 }
 
 exports.scpTorrent = function(filePath) { // mv torrent to ZFS storage server
+    torrentHash = parseTorrent(fs.readFileSync(filePath)).infoHash;
     clientScp.scp(filePath, {
         host: mumoConfig.storageHost,
         username: mumoConfig.storageUsername,
         password: mumoConfig.storagePassword,
-        path: mumoConfig.storagePath,
+        path: mumoConfig.storagePath + '/' + torrentHash + '.torrent',
         port: mumoConfig.storagePort
-    }, function(err) {})
+    }, function(err) {
+        if (err) {
+            return false;
+        }
+        fs.unlinkSync(filePath);
+        return true;
+    })
+    return true;
 }
