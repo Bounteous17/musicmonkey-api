@@ -4,7 +4,10 @@ const fileUpload = require('express-fileupload');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
+const redis = require('redis');
+const redisClient = redis.createClient();
 const cors = require('cors');
+const mumoMessages = require('./utils/msg-codes.json');
 const defaultRoutes = require('./routes/default.js');
 const userRoutes = require('./routes/user.js');
 
@@ -20,13 +23,21 @@ app.use(bodyParser.urlencoded({
     limit: '1mb',
     extended: true,
     parameterLimit:50000
-  }));
+}));
+
+redisClient.on('connect', function () {
+    console.log(mumoMessages.sys_success.A1);
+});
+
+redisClient.on('error', function (err) {
+    console.log(mumoMessages.sys_errors.A1);
+});
 
 mongoose.connect('mongodb://localhost:27017/MusicMonkey-dev', function(err) {
     if (err) {
-        return console.log("Erro DB")
+        return console.log(mumoMessages.sys_errors.A0)
     }
-    console.log("Success connect");
+    console.log(mumoMessages.sys_success.A0);
 });
 
 // use body parser so we can get info from POST and/or URL parameters

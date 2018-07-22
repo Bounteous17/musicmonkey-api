@@ -1,10 +1,10 @@
 const jwt = require('jsonwebtoken');
 const mumoLib = require('../utils/functions.library');
-const config = require('./config');
+const mumoConfig = require('../config.js').get(process.env.NODE_ENV);
 
 exports.generateToken = function(user, callback) {
 
-    var token = jwt.sign({ username: user.username }, config.secret, {
+    var token = jwt.sign({ username: user.username }, mumoConfig.JWT_KEY, {
         expiresIn: 60
     });
 

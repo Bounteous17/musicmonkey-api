@@ -12,9 +12,14 @@
         "C1": "File uploaded!"
     },
     "sys_errors": {
-        "A0": "Server database error :)",
+        "A0": "Server Mongo db error :)",
+        "A1": "Server redis cache unavailable",
         "B0": "Storage server down, try latter",
         "B1": "File not found",
         "B2": "No files were uploaded"
+    },
+    "sys_success": {
+        "A0": "Connected Mongo db",
+        "A1": "Connected Redis cache"
     }
 }

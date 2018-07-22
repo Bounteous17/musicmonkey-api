@@ -1,9 +1,11 @@
 const clientScp = require('scp2')
 const parseTorrent = require('parse-torrent');
+const fs = require('fs');
+const redis = require('redis');
+const redisClient = redis.createClient();
 const User = require('../models/user');
 const mumoMessages = require('./msg-codes.json');
 const mumoConfig = require('../config.js').get(process.env.NODE_ENV);
-const fs = require('fs');
 
 exports.storeToken = function(user, token, callback) {
     User.findOne({username: user.username})
@@ -13,6 +15,8 @@ exports.storeToken = function(user, token, callback) {
         }
 
         user.sessions.push(token);
+
+        redisClient.hmset(user._id.toString(), user.sessions);
 
         user.save(function(err) {
             if (err) return callback({error: true, stats: mumoMessages.sys_errors.A0});

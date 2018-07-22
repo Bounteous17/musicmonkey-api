@@ -64,14 +64,14 @@ router.post('/login', function (req, res) {
         });
       }
       
-      bcrypt.compare(req.body.password, user.password, (err, result) => {
+      bcrypt.compare(req.body.password, user.password, (err, result) => { // Compare password
         if (err) {
           res.status(401);
           res.send({error: true, message: mumoMessages.app_errors.A1});
           return;
         }
         if (result) {
-          auth.generateToken(user, function(reply) {
+          auth.generateToken(user, function(reply) { // Store created token on redis
             if (reply.error) {
               res.status(500)
               res.send(reply);
