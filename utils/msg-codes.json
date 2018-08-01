@@ -4,22 +4,26 @@
         "A1": "Authentication failed :(",
         "B0": "Error refreshing token ;)",
         "B1": "User already exists",
+        "B2": "Artist already exists",
         "C0": "The fields username, email and password are required"
     },
     "app_success": {
         "A0": "User created successfully",
+        "A1": "Artist create successfully",
         "B1": "Authentication successfull ;)",
         "C1": "File uploaded!"
     },
     "sys_errors": {
         "A0": "Server Mongo db error :)",
         "A1": "Server redis cache unavailable",
+        "A2": "Error saving data",
         "B0": "Storage server down, try latter",
         "B1": "File not found",
         "B2": "No files were uploaded"
     },
     "sys_success": {
         "A0": "Connected Mongo db",
-        "A1": "Connected Redis cache"
+        "A1": "Connected Redis cache",
+        "B1": "Sessions updated on redis"
     }
 }

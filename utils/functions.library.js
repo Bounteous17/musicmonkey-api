@@ -14,16 +14,21 @@ exports.storeToken = function(user, token, callback) {
             return callback({error: false, stats: mumoMessages.app_errors.A0});
         }
 
-        user.sessions.push(token);
+        let userSessions = user.sessions;
 
-        redisClient.hmset(user._id.toString(), user.sessions);
+        userSessions.push(token);
 
-        user.save(function(err) {
-            if (err) return callback({error: true, stats: mumoMessages.sys_errors.A0});
-        })
+        redisClient.hmset(user._id.toString(), userSessions, function (err) {
+            if (err) console.log(mumoMessages.sys_errors.A1);
+            console.log(err);
+            
+            user.save(function(err) {
+                if (err) return callback({error: true, stats: mumoMessages.sys_errors.A0});
+            })
+    
+            return callback({error: false, token: token});
+        });
 
-        return callback({error: false, token: token});
-        
     })
     .catch((e) => {
         return callback({error: true, stats: mumoMessages.sys_errors.A0});
@@ -77,3 +82,13 @@ exports.backTorrent = function(torrentHash) { // download torrent by id from sto
         return true;
     })
 }
+
+exports.randomString = function() {
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  
+    for (var i = 0; i < 50; i++)
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+  
+    return text;
+  }

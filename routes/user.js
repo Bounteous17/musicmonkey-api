@@ -1,13 +1,17 @@
 const parseTorrent = require('parse-torrent');
 const express = require('express');
+const mongoose = require('mongoose');
 const router = express.Router();
+const Artist = require('../models/artist');
 const mumoLib = require('../utils/functions.library');
 const mumoMessages = require('../utils/msg-codes.json');
 const musmoTrackers = require('../utils/trackers.json');
 
 router.post('/torrent-upload', function (req, res) {
-      let sampleFile = req.files.sampleFile;
-      let fileDest = '/tmp/'+req.files.sampleFile.name; // Temporal storage torrent file
+      console.log(req.files);
+      console.log(req.body);
+      let sampleFile = req.files.formTorrent;
+      let fileDest = '/tmp/'+sampleFile.name; // Temporal storage torrent file
       if (!req.files) // Check if file exists on the request
             return res.status(400).send({error: true, message: mumoMessages.sys_errors.B2});
       
@@ -35,6 +39,62 @@ router.post('/torrent-magnet', function (req, res) {
       res.status(200);
       res.send({error: false, message: torrentUri}); 
       return;
+});
+
+router.post('/artist-related', function (req, res) {
+      Artist.find({username: {"$regex": req.body.artist, "$options": "i"}})
+      .then((artist) => {
+            if (!artist[0]) {
+                  res.status(200);
+                  res.send({error: true, message: 'No artist found'});
+                  return;
+            }
+
+            res.status(200);
+            res.send({error: false, message: {
+                  artist: artist[0].username
+            }});
+            return;
+      })
+      .catch((e) => {
+            console.log(e);
+            res.status(413)
+            res.send({error: true, stats: mumoMessages.sys_errors.A0});
+            return;
+      })
+});
+
+router.post('/add-artist', function (req, res) {
+      Artist.findOne({username: req.body.artist})
+      .then((artist) => {
+            if (!artist) {
+                  const artist = new Artist({
+                        _id: new mongoose.Types.ObjectId(),
+                        username: req.body.artist
+                  });
+                  artist
+                  .save()
+                  .then(result => {
+                        res.status(200);
+                        res.send({error: true, message: mumoMessages.app_success.A1});
+                        return;
+                  })
+                  .catch(err => {
+                        res.status(413)
+                        res.send({error: true, stats: mumoMessages.sys_errors.A2});
+                        return;
+                  })
+            } else {
+                  res.status(200);
+                  res.send({error: false, message: mumoMessages.app_errors.B2});
+                  return;
+            }
+      })
+      .catch((e) => {
+            res.status(413)
+            res.send({error: true, stats: mumoMessages.sys_errors.A0});
+            return;
+      })
 });
 
 module.exports = router;
