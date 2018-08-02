@@ -42,18 +42,21 @@ router.post('/torrent-magnet', function (req, res) {
 });
 
 router.post('/artist-related', function (req, res) {
-      Artist.find({username: {"$regex": req.body.artist, "$options": "i"}})
-      .then((artist) => {
-            if (!artist[0]) {
+      Artist.find({username: {"$regex": req.body.artist, "$options": "$i"}})
+      .then((artists) => {
+            if (!artists[0] || !req.body.artist) {
                   res.status(200);
-                  res.send({error: true, message: 'No artist found'});
+                  res.send({error: true, message: ['No artist found']});
                   return;
             }
 
+            let artistsAry = [];
+            for (let i in artists) {
+                  artistsAry.push(artists[i].username);
+            }
+
             res.status(200);
-            res.send({error: false, message: {
-                  artist: artist[0].username
-            }});
+            res.send({error: false, message: artistsAry});
             return;
       })
       .catch((e) => {
