@@ -3,9 +3,11 @@ const express = require('express');
 const mongoose = require('mongoose');
 const router = express.Router();
 const Artist = require('../models/artist');
+const Song = require('../models/song');
 const mumoLib = require('../utils/functions.library');
 const mumoMessages = require('../utils/msg-codes.json');
 const musmoTrackers = require('../utils/trackers.json');
+const fs = require('fs');
 
 router.post('/torrent-upload', function (req, res) {
       console.log(req.files);
@@ -14,16 +16,40 @@ router.post('/torrent-upload', function (req, res) {
       let fileDest = '/tmp/'+sampleFile.name; // Temporal storage torrent file
       if (!req.files) // Check if file exists on the request
             return res.status(400).send({error: true, message: mumoMessages.sys_errors.B2});
+
+      const artistBody = req.body.formArtistName;
+      const titleBody = req.body.formTitle;
+      const styleBody = req.body.formStyle;
+
+      mumoLib.storeArtist(artistBody, function(reply) {
+            const song = new Song ({
+                  _id: new mongoose.Types.ObjectId(),
+                  title: titleBody,
+                  artist: new mongoose.Types.ObjectId(reply),
+                  style: styleBody
+            });
       
+            song.save(function(err) {
+                  if (err) {
+                        console.log("Error saving song -> ", err);
+                  }
+                  console.log("New song stored");
+            });
+      });
+
       sampleFile.mv(fileDest, function(err) { // Use the mv() method to place the file somewhere on your server
             if (err)
                   return res.status(500).send(err);
 
-            if (!mumoLib.scpTorrent(fileDest)) //If file can't be copied to storage server
-                  return res.status(500).send({error: true, message: mumoMessages.sys_errors.B0});
+            if (mumoLib.scpTorrent(fileDest, function(reply) {
+                  if(!reply)
+                        return res.status(500).send({error: true, message: mumoMessages.sys_errors.B0});
+                        
+                  return res.send({error: false, message: mumoMessages.app_success.C1});
+            }));
 
-            return res.send({error: false, message: mumoMessages.app_success.C1});
       });
+
 });
 
 router.post('/torrent-magnet', function (req, res) {
@@ -52,7 +78,7 @@ router.post('/artist-related', function (req, res) {
 
             let artistsAry = [];
             for (let i in artists) {
-                  artistsAry.push(artists[i].username);
+                  artistsAry.push({username: artists[i].username, _id: artists[i]._id});
             }
 
             res.status(200);
