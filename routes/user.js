@@ -10,8 +10,6 @@ const musmoTrackers = require('../utils/trackers.json');
 const fs = require('fs');
 
 router.post('/torrent-upload', function (req, res) {
-      console.log(req.files);
-      console.log(req.body);
       let sampleFile = req.files.formTorrent;
       let fileDest = '/tmp/'+sampleFile.name; // Temporal storage torrent file
       if (!req.files) // Check if file exists on the request
@@ -21,35 +19,33 @@ router.post('/torrent-upload', function (req, res) {
       const titleBody = req.body.formTitle;
       const styleBody = req.body.formStyle;
 
-      mumoLib.storeArtist(artistBody, function(reply) {
-            const song = new Song ({
-                  _id: new mongoose.Types.ObjectId(),
-                  title: titleBody,
-                  artist: new mongoose.Types.ObjectId(reply),
-                  style: styleBody
-            });
-      
-            song.save(function(err) {
-                  if (err) {
-                        console.log("Error saving song -> ", err);
-                  }
-                  console.log("New song stored");
-            });
-      });
-
       sampleFile.mv(fileDest, function(err) { // Use the mv() method to place the file somewhere on your server
             if (err)
                   return res.status(500).send(err);
 
-            if (mumoLib.scpTorrent(fileDest, function(reply) {
-                  if(!reply)
+            if (mumoLib.scpTorrent(fileDest, function(replyScp) {
+                  if (!replyScp.error)
                         return res.status(500).send({error: true, message: mumoMessages.sys_errors.B0});
-                        
-                  return res.send({error: false, message: mumoMessages.app_success.C1});
+         
+                  mumoLib.storeArtist(artistBody, function(replyStore) {
+                        const song = new Song ({
+                              _id: new mongoose.Types.ObjectId(),
+                              title: titleBody,
+                              artist: new mongoose.Types.ObjectId(replyStore),
+                              style: styleBody,
+                              torrent: replyScp.hash
+                        });
+                  
+                        song.save(function(err) {
+                              if (err) {
+                                    console.log("Error saving song -> ", err);
+                              }
+                              console.log("New song stored");
+                              return res.send({error: false, message: mumoMessages.app_success.C1});
+                        });
+                  });
             }));
-
       });
-
 });
 
 router.post('/torrent-magnet', function (req, res) {
@@ -125,5 +121,9 @@ router.post('/add-artist', function (req, res) {
             return;
       })
 });
+
+router.post('/random-songs', function (req, res) {
+      mumoLib.generateRandomSongs();
+});   
 
 module.exports = router;

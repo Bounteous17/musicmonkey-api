@@ -6,6 +6,7 @@ const redis = require('redis');
 const redisClient = redis.createClient();
 const User = require('../models/user');
 const Artist = require('../models/artist');
+const Song = require('../models/song');
 const mumoMessages = require('./msg-codes.json');
 const mumoConfig = require('../config.js').get(process.env.NODE_ENV);
 
@@ -17,10 +18,11 @@ exports.storeToken = function(user, token, callback) {
         }
 
         let userSessions = user.sessions;
+        let userId = JSON.stringify(user._id);
 
         userSessions.push(token);
 
-        redisClient.hmset(user._id.toString(), userSessions, function (err) {
+        redisClient.hmset(JSON.parse(userId), userSessions, function (err) {
             if (err) console.log(mumoMessages.sys_errors.A1);
             console.log(err);
             
@@ -62,10 +64,11 @@ exports.scpTorrent = function(filePath, callback) { // mv torrent to ZFS storage
         port: mumoConfig.storagePort
     }, function(err) {
         if (err) {
-            callback(false);
+            callback({error: false});
+            return;
         }
         fs.unlinkSync(filePath);
-        callback(true);
+        callback({error: true, hash: torrentHash});
     })
 }
 
@@ -121,3 +124,25 @@ exports.storeArtist = function(artistBody, callback) {
         callback({error: true, stats: mumoMessages.sys_errors.A0});
   });  
 }
+
+exports.generateRandomSongs = function() {
+    Song.find()
+        .then(songs => {
+            let randomSongs = [];
+            let songSelected = '';
+            for (let i = 0; i < 10; i++) {
+                songSelected = songs[Math.floor(Math.random() * songs.length)];
+                randomSongs.push({title: songSelected.title, artistName: songSelected.artist, torrentHash: songSelected.torrent, songStyle: songSelected.style});
+            }
+
+            redisClient.set('random-songs-home', JSON.stringify(randomSongs), function(err) {
+                if (!err) console.log('Stored ok');
+            });
+        })
+    }
+
+exports.generateRandomSongs = function() {
+            redisClient.get('random-songs-home', function(err, reply){
+                console.log(reply);
+            })
+    }

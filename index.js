@@ -7,9 +7,12 @@ const mongoose = require('mongoose');
 const redis = require('redis');
 const redisClient = redis.createClient();
 const cors = require('cors');
+const cronJobs = require('./utils/schedule/crons');
 const mumoMessages = require('./utils/msg-codes.json');
 const defaultRoutes = require('./routes/default.js');
 const userRoutes = require('./routes/user.js');
+
+cronJobs.scheduledStartTasks();
 
 // default options express
 app.use(cors());
