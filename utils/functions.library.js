@@ -141,8 +141,8 @@ exports.generateRandomSongs = function() {
         })
     }
 
-exports.generateRandomSongs = function() {
+exports.getRandomSongs = function(callback) {
             redisClient.get('random-songs-home', function(err, reply){
-                console.log(reply);
+                callback(JSON.parse(reply));
             })
     }

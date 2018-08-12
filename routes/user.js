@@ -122,8 +122,11 @@ router.post('/add-artist', function (req, res) {
       })
 });
 
-router.post('/random-songs', function (req, res) {
-      mumoLib.generateRandomSongs();
+router.get('/random-songs-home', function (req, res) {
+      mumoLib.getRandomSongs(function(reply) {
+            res.status(200);
+            res.send({error: false, message: reply});
+      });
 });   
 
 module.exports = router;

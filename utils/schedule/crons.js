@@ -1,7 +1,12 @@
-const cron = require('cron').CronJob;
+const CronJob = require('cron').CronJob;
+const mumoLib = require('../functions.library');
 
 exports.scheduledStartTasks = function() {
-    new cron('*/10 * * * *', function() { // Every 10 minutes
+    var job = new CronJob('*/10 * * * * *', function() { // Every 10 minutes
         console.log('Generating random songs for Home screen');
-    }, null, true, 'Europe/Madrid');
+        mumoLib.generateRandomSongs();
+    }, null, true,
+    'America/Los_Angeles');
+
+    job.start();
 }
