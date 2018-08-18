@@ -6,6 +6,8 @@
   "scripts": {
     "start-dev": "nodemon server.js",
     "start-prod": "NODE_ENV='production' node server.js",
+    "start-download": "nodemon seed/seed.js --download",
+    "start-seed": "nodemon seed/seed.js --seed",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -37,6 +39,8 @@
     "parse-torrent": "^6.0.1",
     "redis": "^2.8.0",
     "scp2": "^0.5.0",
+    "webtorrent": "^0.102.1",
+    "webtorrent-hybrid": "^1.0.6",
     "yarn": "^1.7.0"
   },
   "devDependencies": {

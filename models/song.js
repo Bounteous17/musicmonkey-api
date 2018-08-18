@@ -6,6 +6,8 @@ var SongSchema = new mongoose.Schema({
     artist: mongoose.Schema.Types.ObjectId,
     style: {type: String},
     torrent: {type: String},
+    magnet: {type: String},
+    seeding: {type: Boolean}
 }, {timestamps: true});
 
 module.exports = mongoose.model('Song', SongSchema);

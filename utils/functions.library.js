@@ -8,6 +8,7 @@ const User = require('../models/user');
 const Artist = require('../models/artist');
 const Song = require('../models/song');
 const mumoMessages = require('./msg-codes.json');
+const musmoTrackers = require('./trackers.json');
 const mumoConfig = require('../config.js').get(process.env.NODE_ENV);
 
 exports.storeToken = function(user, token, callback) {
@@ -142,7 +143,15 @@ exports.generateRandomSongs = function() {
     }
 
 exports.getRandomSongs = function(callback) {
-            redisClient.get('random-songs-home', function(err, reply){
-                callback(JSON.parse(reply));
-            })
+        redisClient.get('random-songs-home', function(err, reply){
+            callback(JSON.parse(reply));
+        })
     }
+
+exports.getTrakers = function() {
+    let trackersAppend = '';
+    for (let i = 0; i < musmoTrackers.Trackers.length; i++) { // Add stable trackers dynamically
+          trackersAppend = trackersAppend + '&tr=' + musmoTrackers.Trackers[i];
+    }
+    return trackersAppend;
+}

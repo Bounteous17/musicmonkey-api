@@ -26,14 +26,17 @@ router.post('/torrent-upload', function (req, res) {
             if (mumoLib.scpTorrent(fileDest, function(replyScp) {
                   if (!replyScp.error)
                         return res.status(500).send({error: true, message: mumoMessages.sys_errors.B0});
-         
+                  
+                  let torrentUri = parseTorrent.toMagnetURI({infoHash: replyScp.hash}) + mumoLib.getTrakers(); //Append trackers to magnet uri
+
                   mumoLib.storeArtist(artistBody, function(replyStore) {
                         const song = new Song ({
                               _id: new mongoose.Types.ObjectId(),
                               title: titleBody,
                               artist: new mongoose.Types.ObjectId(replyStore),
                               style: styleBody,
-                              torrent: replyScp.hash
+                              torrent: replyScp.hash,
+                              magnet: torrentUri
                         });
                   
                         song.save(function(err) {
@@ -48,16 +51,8 @@ router.post('/torrent-upload', function (req, res) {
       });
 });
 
-router.post('/torrent-magnet', function (req, res) {
-      let hashTorrent = req.body.hashTorrent; //Torrent hash supplied
-      let trackersAppend = '';
-
-      for (let i = 0; i < musmoTrackers.Trackers.length; i++) { // Add stable trackers dynamically
-            trackersAppend = trackersAppend + '&tr=' + musmoTrackers.Trackers[i];
-      }
-      
-      let torrentUri = parseTorrent.toMagnetURI({infoHash: hashTorrent}) + trackersAppend; //Append trackers to magnet uri
-
+router.post('/torrent-magnet', function (req, res) {      
+      let torrentUri = parseTorrent.toMagnetURI({infoHash: req.body.hashTorrent}) + mumoLib.getTrakers(); //Append trackers to magnet uri
       res.status(200);
       res.send({error: false, message: torrentUri}); 
       return;
