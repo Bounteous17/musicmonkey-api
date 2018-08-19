@@ -127,13 +127,14 @@ exports.storeArtist = function(artistBody, callback) {
 }
 
 exports.generateRandomSongs = function() {
-    Song.find()
-        .then(songs => {
+    Song.find({})
+        .populate("artist")
+        .exec(function(err, songs) {
             let randomSongs = [];
             let songSelected = '';
-            for (let i = 0; i < 10; i++) {
+            for (let i = 0; i < 20; i++) {
                 songSelected = songs[Math.floor(Math.random() * songs.length)];
-                randomSongs.push({title: songSelected.title, artistName: songSelected.artist, torrentHash: songSelected.torrent, songStyle: songSelected.style});
+                randomSongs.push({title: songSelected.title, artistName: songSelected.artist.username, torrentHash: songSelected.torrent, songStyle: songSelected.style});
             }
 
             redisClient.set('random-songs-home', JSON.stringify(randomSongs), function(err) {

@@ -13,10 +13,13 @@ const mumoConfig = require('../config.js').get(process.env.NODE_ENV);
 exports.downSeed = function () {
     Song.find({})
     .then((songs) => {
+        const totalSongs = songs.length;
+        let downCont = 0;
         for (let i = 0; i < songs.length; i++) {
             client.add(songs[i].magnet, { path: '/tmp/songs' }, function (torrent) {
                 torrent.on('done', function () {
-                    console.log('Torrent download finished')
+                    downCont = downCont +1;
+                    console.log(downCont + ' of ' + totalSongs + ' downloaded and seeding');
                 })
             })
         }
